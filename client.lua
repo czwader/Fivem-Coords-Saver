@@ -49,6 +49,18 @@ AddEventHandler("coordsSaver:saveCoord", function()
         local coords = GetEntityCoords(ped)
         local heading = GetEntityHeading(ped)
         local dir = headingToVector(heading-90)
+        local yoff = 0.0
+        local zoff = 0.0
+        local newPos = GetOffsetFromEntityInWorldCoords(ped, 0.0, yoff * (currentSpeed + 0.01), zoff * (currentSpeed + 0.01))
+        local heading = GetEntityHeading(ped)
+        DrawScaleformMovieFullscreen(buttons)
+        SetEntityVelocity(ped, 0.0, 0.0, 0.0)
+        SetEntityRotation(ped, 0.0, 0.0, 0.0, 0, false)
+        SetEntityHeading(ped, heading)
+        SetEntityCoordsNoOffset(ped, newPos.x, newPos.y, newPos.z, noclipActive, noclipActive, noclipActive)
+        SetEntityVisible(ped, false, 0)
+        SetEntityCollision(ped, false, false)
+        disableControls()
 		drawTxt("x= "..tenth(coords.x,2).." y= "..tenth(coords.y,2).." z= "..tenth(coords.z,2).." dirX= "..tenth(dir.x,2).." dirY= "..tenth(dir.y,2))
 		DrawMarker(	
 				26, coords,
@@ -57,12 +69,7 @@ AddEventHandler("coordsSaver:saveCoord", function()
 				0.5, 0.5, 0.5,
 				255, 255, 255, 255,
 				false, false, nil, false
-				)
-
-        DrawScaleformMovieFullscreen(buttons)
-            
-        local yoff = 0.0
-        local zoff = 0.0
+			)
 
         if IsControlJustPressed(1, config.controls.changeSpeed) then
             if index ~= 8 then
@@ -75,8 +82,6 @@ AddEventHandler("coordsSaver:saveCoord", function()
             zmrdeDamTiPestisetupScaleform("instructional_buttons")
         end
             
-            disableControls()
-
         if IsDisabledControlPressed(0, config.controls.goForward) then
             yoff = config.offsets.y
         end
@@ -115,15 +120,6 @@ AddEventHandler("coordsSaver:saveCoord", function()
                 SetEntityCollision(ped, true, true)
             	return
         end
-
-        local newPos = GetOffsetFromEntityInWorldCoords(ped, 0.0, yoff * (currentSpeed + 0.01), zoff * (currentSpeed + 0.01))
-        local heading = GetEntityHeading(ped)
-        SetEntityVelocity(ped, 0.0, 0.0, 0.0)
-        SetEntityRotation(ped, 0.0, 0.0, 0.0, 0, false)
-        SetEntityHeading(ped, heading)
-        SetEntityCoordsNoOffset(ped, newPos.x, newPos.y, newPos.z, noclipActive, noclipActive, noclipActive)
-        SetEntityVisible(ped, false, 0)
-        SetEntityCollision(ped, false, false)
 	end	
 end)
 
