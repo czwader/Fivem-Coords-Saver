@@ -1,5 +1,2 @@
 # FiveM-CoordsSaver
-
-I am sharing this amazing coords saver it is only for dev purpose so i didn't solve the optimization and this script is inspired by Mr Teb from youtube programming video.
-
-Control is simple with only the arrows and you set the height with the Q and Z keys.
+![image](https://github.com/czwader/Fivem-Coords-Saver/assets/73030267/9e880687-8c59-4fdd-9fbf-82058d72ea0a)
