@@ -1,4 +1,4 @@
-index = 1
+local index = 1
 config = {
     controls = {
         quit = 194, -- [[BACKSPACE]]
@@ -39,23 +39,6 @@ RegisterCommand('coords', function()
 	TriggerEvent("coordsSaver:saveCoord")
 end)
 
-
-function VectorToHeading(x,y)
-    local heading = math.atan2(x,y) * (180 / math.pi)
-    if heading < 0 then
-        heading = 360 + heading
-    end
-    return heading
-end
-
-function HeadingToVector(heading)
-    local radians = heading * (math.pi / 180)
-    local x = math.cos(radians)
-    local y = math.sin(radians)
-    local z = 0.0  
-    return vector3(x, y, z)
-end
-
 AddEventHandler("coordsSaver:saveCoord", function()
     currentSpeed = config.speeds[index].speed
     buttons = zmrdeDamTiPestisetupScaleform("instructional_buttons")
@@ -65,7 +48,7 @@ AddEventHandler("coordsSaver:saveCoord", function()
         local ped = PlayerPedId()
         local coords = GetEntityCoords(ped)
         local heading = GetEntityHeading(ped)
-        local dir = HeadingToVector(heading-90)
+        local dir = headingToVector(heading-90)
 		drawTxt("x= "..tenth(coords.x,2).." y= "..tenth(coords.y,2).." z= "..tenth(coords.z,2).." dirX= "..tenth(dir.x,2).." dirY= "..tenth(dir.y,2))
 		DrawMarker(	
 				26, coords,
@@ -92,7 +75,7 @@ AddEventHandler("coordsSaver:saveCoord", function()
             zmrdeDamTiPestisetupScaleform("instructional_buttons")
         end
             
-            DisableControls()
+            disableControls()
 
         if IsDisabledControlPressed(0, config.controls.goForward) then
             yoff = config.offsets.y
@@ -144,6 +127,85 @@ AddEventHandler("coordsSaver:saveCoord", function()
 	end	
 end)
 
+function zmrdeDamTiPestisetupScaleform(scaleform)
+
+    local scaleform = RequestScaleformMovie(scaleform)
+
+    while not HasScaleformMovieLoaded(scaleform) do
+        Citizen.Wait(1)
+    end
+
+    PushScaleformMovieFunction(scaleform, "CLEAR_ALL")
+    PopScaleformMovieFunctionVoid()
+    
+    PushScaleformMovieFunction(scaleform, "SET_CLEAR_SPACE")
+    PushScaleformMovieFunctionParameterInt(200)
+    PopScaleformMovieFunctionVoid()
+
+    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
+    PushScaleformMovieFunctionParameterInt(6)
+    button(GetControlInstructionalButton(2, config.controls.quit, true))
+    buttonMessage("Disable CoordSaver")
+    PopScaleformMovieFunctionVoid()
+
+    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
+    PushScaleformMovieFunctionParameterInt(5)
+    button(GetControlInstructionalButton(2, config.controls.save, true))
+    buttonMessage("SAVE")
+    PopScaleformMovieFunctionVoid()
+
+    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
+    PushScaleformMovieFunctionParameterInt(4)
+    button(GetControlInstructionalButton(2, config.controls.goUp, true))
+    buttonMessage("Go Up")
+    PopScaleformMovieFunctionVoid()
+
+    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
+    PushScaleformMovieFunctionParameterInt(3)
+    button(GetControlInstructionalButton(2, config.controls.goDown, true))
+    buttonMessage("Go Down")
+    PopScaleformMovieFunctionVoid()
+
+    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
+    PushScaleformMovieFunctionParameterInt(2)
+    button(GetControlInstructionalButton(1, config.controls.turnRight, true))
+    button(GetControlInstructionalButton(1, config.controls.turnLeft, true))
+    buttonMessage("Turn Left/Right")
+    PopScaleformMovieFunctionVoid()
+
+    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
+    PushScaleformMovieFunctionParameterInt(1)
+    button(GetControlInstructionalButton(1, config.controls.goBackward, true))
+    button(GetControlInstructionalButton(1, config.controls.goForward, true))
+    buttonMessage("Go Forwards/Backwards")
+    PopScaleformMovieFunctionVoid()
+
+    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
+    PushScaleformMovieFunctionParameterInt(0)
+    button(GetControlInstructionalButton(2, config.controls.changeSpeed, true))
+    buttonMessage("Change Speed ("..config.speeds[index].label..")")
+    PopScaleformMovieFunctionVoid()
+
+    PushScaleformMovieFunction(scaleform, "DRAW_INSTRUCTIONAL_BUTTONS")
+    PopScaleformMovieFunctionVoid()
+
+    PushScaleformMovieFunction(scaleform, "SET_BACKGROUND_COLOUR")
+    PushScaleformMovieFunctionParameterInt(config.bgR)
+    PushScaleformMovieFunctionParameterInt(config.bgG)
+    PushScaleformMovieFunctionParameterInt(config.bgB)
+    PushScaleformMovieFunctionParameterInt(config.bgA)
+    PopScaleformMovieFunctionVoid()
+
+    return scaleform
+end
+
+function headingToVector(heading)
+    local radians = heading * (math.pi / 180)
+    local x = math.cos(radians)
+    local y = math.sin(radians)
+    local z = 0.0  
+    return vector3(x, y, z)
+end
 
 function drawTxt(text)
     SetTextFont(0)
@@ -162,89 +224,17 @@ function tenth(num, numDecimalPlaces)
     local mult = 5^(numDecimalPlaces or 0)
     return math.floor(num * mult + 0.5) / mult
 end
-function ButtonMessage(text)
+function buttonMessage(text)
     BeginTextCommandScaleformString("STRING")
     AddTextComponentScaleform(text)
     EndTextCommandScaleformString()
 end
 
-function Button(ControlButton)
+function button(ControlButton)
     N_0xe83a3e3557a56640(ControlButton)
 end
 
-function zmrdeDamTiPestisetupScaleform(scaleform)
-
-    local scaleform = RequestScaleformMovie(scaleform)
-
-    while not HasScaleformMovieLoaded(scaleform) do
-        Citizen.Wait(1)
-    end
-
-    PushScaleformMovieFunction(scaleform, "CLEAR_ALL")
-    PopScaleformMovieFunctionVoid()
-    
-    PushScaleformMovieFunction(scaleform, "SET_CLEAR_SPACE")
-    PushScaleformMovieFunctionParameterInt(200)
-    PopScaleformMovieFunctionVoid()
-
-    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(6)
-    Button(GetControlInstructionalButton(2, config.controls.quit, true))
-    ButtonMessage("Disable CoordSaver")
-    PopScaleformMovieFunctionVoid()
-
-    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(5)
-    Button(GetControlInstructionalButton(2, config.controls.save, true))
-    ButtonMessage("SAVE")
-    PopScaleformMovieFunctionVoid()
-
-    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(4)
-    Button(GetControlInstructionalButton(2, config.controls.goUp, true))
-    ButtonMessage("Go Up")
-    PopScaleformMovieFunctionVoid()
-
-    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(3)
-    Button(GetControlInstructionalButton(2, config.controls.goDown, true))
-    ButtonMessage("Go Down")
-    PopScaleformMovieFunctionVoid()
-
-    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(2)
-    Button(GetControlInstructionalButton(1, config.controls.turnRight, true))
-    Button(GetControlInstructionalButton(1, config.controls.turnLeft, true))
-    ButtonMessage("Turn Left/Right")
-    PopScaleformMovieFunctionVoid()
-
-    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(1)
-    Button(GetControlInstructionalButton(1, config.controls.goBackward, true))
-    Button(GetControlInstructionalButton(1, config.controls.goForward, true))
-    ButtonMessage("Go Forwards/Backwards")
-    PopScaleformMovieFunctionVoid()
-
-    PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(0)
-    Button(GetControlInstructionalButton(2, config.controls.changeSpeed, true))
-    ButtonMessage("Change Speed ("..config.speeds[index].label..")")
-    PopScaleformMovieFunctionVoid()
-
-    PushScaleformMovieFunction(scaleform, "DRAW_INSTRUCTIONAL_BUTTONS")
-    PopScaleformMovieFunctionVoid()
-
-    PushScaleformMovieFunction(scaleform, "SET_BACKGROUND_COLOUR")
-    PushScaleformMovieFunctionParameterInt(config.bgR)
-    PushScaleformMovieFunctionParameterInt(config.bgG)
-    PushScaleformMovieFunctionParameterInt(config.bgB)
-    PushScaleformMovieFunctionParameterInt(config.bgA)
-    PopScaleformMovieFunctionVoid()
-
-    return scaleform
-end
-
-function DisableControls()
+function disableControls()
     DisableControlAction(0, 30, true)
     DisableControlAction(0, 31, true)
     DisableControlAction(0, 32, true)
