@@ -36,10 +36,10 @@ config = {
 }
 
 RegisterCommand('coords', function()
-	TriggerEvent("coordsSaver:saveCoord")
+	saveCoord()
 end)
 
-AddEventHandler("coordsSaver:saveCoord", function()
+function saveCoord()
     currentSpeed = config.speeds[index].speed
     buttons = zmrdeDamTiPestisetupScaleform("instructional_buttons")
     
@@ -51,17 +51,15 @@ AddEventHandler("coordsSaver:saveCoord", function()
         local dir = headingToVector(heading-90)
         local yoff = 0.0
         local zoff = 0.0
-        local newPos = GetOffsetFromEntityInWorldCoords(ped, 0.0, yoff * (currentSpeed + 0.01), zoff * (currentSpeed + 0.01))
         local heading = GetEntityHeading(ped)
         DrawScaleformMovieFullscreen(buttons)
         SetEntityVelocity(ped, 0.0, 0.0, 0.0)
         SetEntityRotation(ped, 0.0, 0.0, 0.0, 0, false)
         SetEntityHeading(ped, heading)
-        SetEntityCoordsNoOffset(ped, newPos.x, newPos.y, newPos.z, noclipActive, noclipActive, noclipActive)
         SetEntityVisible(ped, false, 0)
         SetEntityCollision(ped, false, false)
         disableControls()
-		drawTxt("x= "..tenth(coords.x,2).." y= "..tenth(coords.y,2).." z= "..tenth(coords.z,2).." dirX= "..tenth(dir.x,2).." dirY= "..tenth(dir.y,2))
+		drawTxt("~r~x= ~s~"..tenth(coords.x,2).." ~r~y= ~s~"..tenth(coords.y,2).." ~r~z= ~s~"..tenth(coords.z,2).." ~r~dirX= ~s~"..tenth(dir.x,2).." ~r~dirY= ~s~"..tenth(dir.y,2))
 		DrawMarker(	
 				26, coords,
 				dir.x, dir.y, 0,
@@ -120,8 +118,11 @@ AddEventHandler("coordsSaver:saveCoord", function()
                 SetEntityCollision(ped, true, true)
             	return
         end
+
+        local newPos = GetOffsetFromEntityInWorldCoords(ped, 0.0, yoff * (currentSpeed + 0.01), zoff * (currentSpeed + 0.01))
+        SetEntityCoordsNoOffset(ped, newPos.x, newPos.y, newPos.z, true, true, true)
 	end	
-end)
+end
 
 function zmrdeDamTiPestisetupScaleform(scaleform)
 
